@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echo | صدى - منصة التفاعل الجغرافي</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    
+    <style>
+        :root {
+            --primary: #00C9FF;
+            --secondary: #92FE9D;
+            --accent: #FFD700;
+            --dark: #0A0E17;
+            --light: #F8F9FA;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #0A0E17 0%, #1A1F2E 100%);
+            color: var(--light);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 201, 255, 0.1);
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--dark);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 201, 255, 0.3);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 4px;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .alert-success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10B981;
+        }
+        
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #F59E0B;
+        }
+        
+        .alert-info {
+            background: rgba(0, 201, 255, 0.15);
+            border: 1px solid rgba(0, 201, 255, 0.3);
+            color: #00C9FF;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+        
+        .tab {
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--dark);
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 201, 255, 0.1);
+        }
+        
+        .counter {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+        
+        .badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .badge-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10B981;
+        }
+        
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: #F59E0B;
+        }
+        
+        .badge-primary {
+            background: rgba(0, 201, 255, 0.2);
+            color: #00C9FF;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0A0E17 0%, #1A1F2E 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .logo-circle {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, #00C9FF 0%, #92FE9D 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .logo-text {
+            text-align: center;
+        }
+        
+        .logo-text h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00C9FF 0%, #92FE9D 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .logo-text p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loadingScreen">
+        <div class="logo-circle">
+            <i class="fas fa-globe-americas text-4xl text-[#0A0E17]"></i>
+        </div>
+        <div class="logo-text">
+            <h1>ECHO</h1>
+            <p>منصة التفاعل الجغرافي</p>
+        </div>
+    </div>
+
+    <div id="mainApp" style="display: none;">
+        
+        <header class="py-6 border-b border-white/10">
+            <div class="container">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-full bg-gradient-to-r from-[#00C9FF] to-[#92FE9D] flex items-center justify-center">
+                            <i class="fas fa-globe-americas text-2xl text-[#0A0E17]"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-3xl font-black bg-gradient-to-r from-[#00C9FF] to-[#92FE9D] bg-clip-text text-transparent">
+                                ECHO
+                            </h1>
+                            <p class="text-sm opacity-70">منصة التفاعل الجغرافي</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-6">
+                        <div class="text-center">
+                            <div class="counter" id="pointsCounter">0</div>
+                            <div class="text-sm opacity-70">نقطة</div>
+                        </div>
+                        
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-r from-[#00C9FF] to-[#92FE9D] flex items-center justify-center">
+                                <span class="text-lg font-bold text-[#0A0E17]" id="userInitial">م</span>
+                            </div>
+                            <div>
+                                <div class="font-bold" id="userName">مستخدم</div>
+                                <div class="text-xs opacity-70" id="userLevel">مستوى مبتدئ</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="py-8">
+            <div class="container">
+                
+                <section class="mb-12">
+                    <h2 class="section-title">إحصائياتك</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div class="card text-center fade-in">
+                            <div class="text-3xl font-bold text-[#00C9FF] mb-2" id="dailyPoints">0</div>
+                            <div class="text-sm opacity-70">نقاط اليوم</div>
+                        </div>
+                        
+                        <div class="card text-center fade-in">
+                            <div class="text-3xl font-bold text-[#92FE9D] mb-2" id="weeklyPoints">0</div>
+                            <div class="text-sm opacity-70">نقاط الأسبوع</div>
+                        </div>
+                        
+                        <div class="card text-center fade-in">
+                            <div class="text-3xl font-bold text-[#FFD700] mb-2" id="nearbyStores">0</div>
+                            <div class="text-sm opacity-70">محلات قريبة</div>
+                        </div>
+                        
+                        <div class="card text-center fade-in">
+                            <div class="text-3xl font-bold text-[#FF416C] mb-2" id="totalWithdrawn">0</div>
+                            <div class="text-sm opacity-70">دج مسحوبة</div>
+                        </div>
+                    </div>
+                </section>
+                
+                <div class="tabs mb-8">
+                    <div class="tab active" onclick="switchTab('interaction')">
+                        <i class="fas fa-map-marker-alt"></i> التفاعل
+                    </div>
+                    <div class="tab" onclick="switchTab('withdraw')">
+                        <i class="fas fa-money-bill-wave"></i> السحب
+                    </div>
+                    <div class="tab" onclick="switchTab('merchant')">
+                        <i class="fas fa-store"></i> المتجر
+                    </div>
+                    <div class="tab" onclick="switchTab('profile')">
+                        <i class="fas fa-user"></i> الحساب
+                    </div>
+                </div>
+                
+                <div id="interactionTab" class="tab-content">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="card">
+                            <h3 class="text-xl font-bold mb-4 text-[#00C9FF]">
+                                <i class="fas fa-map mr-2"></i> المحلات القريبة
+                            </h3>
+                            <div id="mapContainer" class="h-96 rounded-xl bg-gray-800 mb-4 flex items-center justify-center">
+                                <div class="text-center">
+                                    <i class="fas fa-map-marked-alt text-5xl text-[#00C9FF] mb-4"></i>
+                                    <p class="opacity-70">جاري تحديد موقعك...</p>
+                                    <button onclick="getUserLocation()" class="btn btn-primary mt-4">
+                                        <i class="fas fa-location-crosshairs"></i> تحديد الموقع
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                <span>اذهب إلى أقرب محل واضغط زر الصدى لربح النقاط</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card flex flex-col items-center justify-center">
+                            <div class="text-center mb-8">
+                                <h3 class="text-2xl font-bold mb-4">تفاعل مع محيطك</h3>
+                                <p class="opacity-70 mb-2">اضغط زر الصدى عندما تكون بالقرب من محل</p>
+                                <p class="text-sm opacity-50">كل صدى = 10-20 نقطة حسب نوع المتجر</p>
+                            </div>
+                            
+                            <button id="echoButton" class="w-40 h-40 rounded-full bg-gradient-to-r from-[#00C9FF] via-[#92FE9D] to-[#FFD700] flex items-center justify-center text-white text-5xl mb-6 hover:scale-105 transition-transform shadow-2xl">
+                                <i class="fas fa-bullseye"></i>
+                            </button>
+                            
+                            <div class="text-center">
+                                <div class="mb-4">
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span>تقدمك اليومي</span>
+                                        <span id="dailyProgress">0/5</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-clock"></i>
+                                    <span>التبريد: <span id="cooldownTimer">0</span> ثانية</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="withdrawTab" class="tab-content hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="card">
+                            <h3 class="text-xl font-bold mb-6 text-[#92FE9D]">
+                                <i class="fas fa-wallet mr-2"></i> سحب الأرباح
+                            </h3>
+                            
+                            <div class="alert alert-warning mb-6">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span>الحد الأدنى للسحب: 500 نقطة = 500 دينار جزائري</span>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <div class="flex justify-between items-center mb-4">
+                                    <span class="font-bold">رصيد النقاط:</span>
+                                    <span class="counter" id="withdrawPoints">0</span>
+                                </div>
+                                <div class="flex justify-between items-center mb-4">
+                                    <span class="font-bold">قابل للسحب:</span>
+                                    <span class="text-2xl font-bold text-[#FFD700]" id="withdrawAmount">0 دج</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold">رقم بريدي موب:</span>
+                                    <span class="text-lg font-bold" id="userBaridiMob">غير محدد</span>
+                                </div>
+                            </div>
+                            
+                            <button onclick="showWithdrawForm()" class="btn btn-primary w-full py-4 text-lg">
+                                <i class="fas fa-money-bill-wave"></i> طلب سحب الآن
+                            </button>
+                        </div>
+                        
+                        <div class="card">
+                            <h3 class="text-xl font-bold mb-6 text-[#FFD700]">
+                                <i class="fas fa-crown mr-2"></i> باقات السحب
+                            </h3>
+                            
+                            <div class="space-y-4">
+                                <div class="border border-[#00C9FF]/30 rounded-xl p-4 hover:border-[#00C9FF] transition-colors">
+                                    <div class="flex justify-between items-center mb-3">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-12 h-12 rounded-full bg-[#00C9FF]/20 flex items-center justify-center">
+                                                <i class="fas fa-calendar-week text-[#00C9FF]"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-bold">باقة أسبوعية</h4>
+                                                <p class="text-sm opacity-70">للمستخدمين النشطين</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-left">
+                                            <div class="text-2xl font-bold text-[#00C9FF]">1000 دج</div>
+                                            <div class="text-sm opacity-70">أسبوعيًا</div>
+                                        </div>
+                                    </div>
+                                    <ul class="text-sm opacity-80 space-y-1 mb-4">
+                                        <li><i class="fas fa-check text-[#92FE9D] ml-2"></i> سحب حتى 1000 دج أسبوعيًا</li>
+                                        <li><i class="fas fa-check text-[#92FE9D] ml-2"></i> 1000 نقطة = 1000 دج</li>
+                                        <li><i class="fas fa-check text-[#92FE9D] ml-2"></i> معالجة خلال 24 ساعة</li>
+                                    </ul>
+                                    <button onclick="selectWithdrawPackage('weekly', 1000)" class="btn btn-secondary w-full">
+                                        اختيار الباقة
+                                    </button>
+                                </div>
+                                
+                                <div class="border border-[#92FE9D]/30 rounded-xl p-4 hover:border-[#92FE9D] transition-colors">
+                                    <div class="flex justify-between items-center mb-3">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-12 h-12 rounded-full bg-[#92FE9D]/20 flex items-center justify-center">
+                                                <i class="fas fa-calendar-alt text-[#92FE9D]"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-bold">باقة شهرية</h4>
+                                                <p class="text-sm opacity-70">للمستخدمين الدائمين</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-left">
+                                            <div class="text-2xl font-bold text-[#92FE9D]">2000 دج</div>
+                                            <div class="text-sm opacity-70">شهريًا</div>
+                                        </div>
+                                    </div>
+                                    <ul class="text-sm opacity-80 space-y-1 mb-4">
+                                        <li><i class="fas fa-check text-[#92FE9D] ml-2"></i> سحب حتى 2000 دج شهريًا</li>
+                                        <li><i class="fas fa-check text-[#92FE9D] ml-2"></i> 1000 نقطة = 1000 دج</li>
+                                        <li><i class="fas fa-check text-[#92FE9D] ml-2"></i> معالجة خلال 12 ساعة</li>
+                                    </ul>
+                                    <button onclick="selectWithdrawPackage('monthly', 2000)" class="btn btn-secondary w-full">
+                                        اختيار الباقة
+                                    </button>
+                                </div>
+                                
+                                <div class="border border-[#FFD700]/30 rounded-xl p-4 hover:border-[#FFD700] transition-colors">
+                                    <div class="flex justify-between items-center mb-3">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-12 h-12 rounded-full bg-[#FFD700]/20 flex items-center justify-center">
+                                                <i class="fas fa-calendar text-[#FFD700]"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-bold">باقة 3 أشهر</h4>
+                                                <p class="text-sm opacity-70">للمستخدمين المميزين</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-left">
+                                            <div class="text-2xl font-bold text-[#FFD700]">3000 دج</div>
+                                            <div class="text-sm opacity-70">كل 3 أشهر</div>
+                                        </div>
+                                    </div>
+                                    <ul class="text-sm opacity-80 space-y-1 mb-4">
+                                        <li><i class="fas fa-check text-[#92FE9D] ml-2"></i> سحب حتى 3000 دج كل 3 أشهر</li>
+                                        <li><i class="fas fa-check text-[#92FE9D] ml-2"></i> 1000 نقطة = 1000 دج</li>
+                                        <li><i class="fas fa-check text-[#92FE9D] ml-2"></i> معالجة خلال 6 ساعات</li>
+                                    </ul>
+                                    <button onclick="selectWithdrawPackage('quarterly', 3000)" class="btn btn-secondary w-full">
+                                        اختيار الباقة
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="merchantTab" class="tab-content hidden">
+                    <div class="card">
+                        <h3 class="text-xl font-bold mb-6 text-[#00C9FF]">
+                            <i class="fas fa-store mr-2"></i> اشتراك المتجر
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                            <div class="border border-[#00C9FF]/30 rounded-xl p-6 hover:border-[#00C9FF] transition-colors">
+                                <div class="text-center mb-6">
+                                    <div class="w-16 h-16 rounded-full bg-[#00C9FF]/20 flex items-center justify-center mx-auto mb-4">
+                                        <i class="fas fa-calendar-week text-2xl text-[#00C9FF]"></i>
+                                    </div>
+                                    <h4 class="text-xl font-bold mb-2">أسبوعي</h4>
+                                    <div class="text-3xl font-bold text-[#00C9FF]">500 دج</div>
+                                    <div class="text-sm opacity-70">/أسبوع</div>
+                                </div>
+                                <ul class="space-y-3 mb-6">
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-[#92FE9D]"></i>
+                                        <span>ظهور على الخريطة</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-[#92FE9D]"></i>
+                                        <span>نطاق 100 متر</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-[#92FE9D]"></i>
+                                        <span>1000 صدى أسبوعي</span>
+                                    </li>
+                                </ul>
+                                <button onclick="selectMerchantPackage('weekly', 500)" class="btn btn-primary w-full">
+                                    اشتراك أسبوعي
+                                </button>
+                            </div>
+                            
+                            <div class="border border-[#92FE9D]/30 rounded-xl p-6 hover:border-[#92FE9D] transition-colors">
+                                <div class="text-center mb-6">
+                                    <div class="w-16 h-16 rounded-full bg-[#92FE9D]/20 flex items-center justify-center mx-auto mb-4">
+                                        <i class="fas fa-calendar-alt text-2xl text-[#92FE9D]"></i>
+                                    </div>
+                                    <h4 class="text-xl font-bold mb-2">شهري</h4>
+                                    <div class="text-3xl font-bold text-[#92FE9D]">1500 دج</div>
+                                    <div class="text-sm opacity-70">/شهر</div>
+                                </div>
+                                <ul class="space-y-3 mb-6">
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-[#92FE9D]"></i>
+                                        <span>ظهور مميز</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-[#92FE9D]"></i>
+                                        <span>نطاق 250 متر</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-[#92FE9D]"></i>
+                                        <span>5000 صدى شهري</span>
+                                    </li>
+                                </ul>
+                                <button onclick="selectMerchantPackage('monthly', 1500)" class="btn btn-primary w-full">
+                                    اشتراك شهري
+                                </button>
+                            </div>
+                            
+                            <div class="border border-[#FFD700]/30 rounded-xl p-6 hover:border-[#FFD700] transition-colors">
+                                <div class="text-center mb-6">
+                                    <div class="w-16 h-16 rounded-full bg-[#FFD700]/20 flex items-center justify-center mx-auto mb-4">
+                                        <i class="fas fa-crown text-2xl text-[#FFD700]"></i>
+                                    </div>
+                                    <h4 class="text-xl font-bold mb-2">3 أشهر</h4>
+                                    <div class="text-3xl font-bold text-[#FFD700]">3000 دج</div>
+                                    <div class="text-sm opacity-70">/3 أشهر</div>
+                                </div>
+                                <ul class="space-y-3 mb-6">
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-[#92FE9D]"></i>
+                                        <span>ظهور مميز جدًا</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-[#92FE9D]"></i>
+                                        <span>نطاق 500 متر</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-[#92FE9D]"></i>
+                                        <span>صدى غير محدود</span>
+                                    </li>
+                                </ul>
+                                <button onclick="selectMerchantPackage('quarterly', 3000)" class="btn btn-primary w-full">
+                                    اشتراك 3 أشهر
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <span>الدفع عبر بريدي موب فقط. بعد الاشتراك، سنتواصل معك خلال 24 ساعة</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="profileTab" class="tab-content hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="card">
+                            <h3 class="text-xl font-bold mb-6 text-[#00C9FF]">
+                                <i class="fas fa-user-circle mr-2"></i> معلومات الحساب
+                            </h3>
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-center gap-4 p-4 bg-white/5 rounded-xl">
+                                    <div class="w-20 h-20 rounded-full bg-gradient-to-r from-[#00C9FF] to-[#92FE9D] flex items-center justify-center text-3xl font-bold text-[#0A0E17]">
+                                        <span id="profileInitial">م</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xl font-bold" id="profileName">مستخدم</h4>
+                                        <p class="opacity-70" id="profileEmail">لم يتم تحديد البريد</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">رقم بريدي موب</label>
+                                    <input type="tel" id="profileBaridiMob" class="form-input" placeholder="07XX XX XX XX">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">المدينة</label>
+                                    <input type="text" id="profileCity" class="form-input" placeholder="المدينة">
+                                </div>
+                                
+                                <button onclick="updateProfile()" class="btn btn-primary w-full">
+                                    <i class="fas fa-save"></i> حفظ التغييرات
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <h3 class="text-xl font-bold mb-6 text-[#92FE9D]">
+                                <i class="fas fa-history mr-2"></i> آخر العمليات
+                            </h3>
+                            
+                            <div class="space-y-3 max-h-96 overflow-y-auto" id="recentActivities">
+                                <div class="text-center py-8 opacity-50">
+                                    <i class="fas fa-history text-4xl mb-4"></i>
+                                    <p>لا توجد عمليات سابقة</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="py-6 border-t border-white/10 mt-12">
+            <div class="container">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div>
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-[#00C9FF] to-[#92FE9D] flex items-center justify-center">
+                                <i class="fas fa-globe-americas text-lg text-[#0A0E17]"></i>
+                            </div>
+                            <span class="text-lg font-bold">Echo | صدى</span>
+                        </div>
+                        <p class="text-sm opacity-70">منصة التفاعل الجغرافي © 2024</p>
+                    </div>
+                    
+                    <div class="flex gap-4">
+                        <a href="#" class="text-sm opacity-70 hover:opacity-100 hover:text-[#00C9FF] transition-colors">
+                            الشروط والأحكام
+                        </a>
+                        <a href="#" class="text-sm opacity-70 hover:opacity-100 hover:text-[#00C9FF] transition-colors">
+                            الدعم الفني
+                        </a>
+                        <a href="#" class="text-sm opacity-70 hover:opacity-100 hover:text-[#00C9FF] transition-colors">
+                            اتصل بنا
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <div id="withdrawModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+            <div class="card w-full max-w-md mx-4">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-[#92FE9D]">
+                        <i class="fas fa-money-bill-wave mr-2"></i> طلب سحب
+                    </h3>
+                    <button onclick="closeWithdrawModal()" class="text-2xl opacity-70 hover:opacity-100">
+                        &times;
+                    </button>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">المبلغ المراد سحبه (دج)</label>
+                    <input type="number" id="withdrawInput" class="form-input" placeholder="أدخل المبلغ" min="500" step="100">
+                    <div class="text-xs opacity-70 mt-2">الحد الأدنى: 500 دج</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">رقم بريدي موب</label>
+                    <input type="tel" id="baridiMobInput" class="form-input" placeholder="07XX XX XX XX">
+                </div>
+                
+                <div class="mb-6">
+                    <div class="flex justify-between mb-2">
+                        <span>رصيد النقاط:</span>
+                        <span id="modalPoints">0</span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span>المبلغ المعادل:</span>
+                        <span id="modalAmount">0 دج</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>العمولة:</span>
+                        <span id="modalFee">0 دج</span>
+                    </div>
+                </div>
+                
+                <button onclick="submitWithdrawal()" class="btn btn-primary w-full py-4">
+                    <i class="fas fa-check"></i> تأكيد طلب السحب
+                </button>
+            </div>
+        </div>
+
+        <div id="merchantModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+            <div class="card w-full max-w-md mx-4">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-[#00C9FF]">
+                        <i class="fas fa-store mr-2"></i> اشتراك المتجر
+                    </h3>
+                    <button onclick="closeMerchantModal()" class="text-2xl opacity-70 hover:opacity-100">
+                        &times;
+                    </button>
+                </div>
+                
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <span>الباقة المختارة:</span>
+                        <span class="font-bold text-[#00C9FF]" id="selectedPackage">أسبوعي</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-4">
+                        <span>المبلغ:</span>
+                        <span class="text-2xl font-bold text-[#FFD700]" id="packageAmount">500 دج</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span>المدة:</span>
+                        <span class="font-bold" id="packageDuration">أسبوع واحد</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">اسم المتجر</label>
+                    <input type="text" id="storeName" class="form-input" placeholder="اسم المتجر">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">نوع المتجر</label>
+                    <select id="storeType" class="form-input">
+                        <option value="">اختر النوع</option>
+                        <option value="cafe">مقهى</option>
+                        <option value="restaurant">مطعم</option>
+                        <option value="market">سوق</option>
+                        <option value="clothing">ملابس</option>
+                        <option value="electronics">إلكترونيات</option>
+                        <option value="other">أخرى</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">رقم بريدي موب للدفع</label>
+                    <input type="tel" id="merchantBaridiMob" class="form-input" placeholder="07XX XX XX XX">
+                </div>
+                
+                <div class="alert alert-info mb-6">
+                    <i class="fas fa-info-circle"></i>
+                    <span>سنقوم بالاتصال بك خلال 24 ساعة لتأكيد الدفع</span>
+                </div>
+                
+                <button onclick="submitMerchantSubscription()" class="btn btn-primary w-full py-4">
+                    <i class="fas fa-check"></i> تأكيد الاشتراك
+                </button>
+            </div>
+        </div>
+
+        <div id="confirmModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+            <div class="card w-full max-w-md mx-4">
+                <div class="text-center mb-6">
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-r from-[#00C9FF] to-[#92FE9D] flex items-center justify-center text-3xl mx-auto mb-4">
+                        <i class="fas fa-check text-[#0A0E17]"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2" id="confirmTitle">تمت العملية بنجاح</h3>
+                    <p class="opacity-70" id="confirmMessage">سنتواصل معك قريباً</p>
+                </div>
+                
+                <button onclick="closeConfirmModal()" class="btn btn-primary w-full">
+                    موافق
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVW3hTvfxPRTHEDa9hfEMtSctUBAWP7q4",
+            authDomain: "echo-dddfa.firebaseapp.com",
+            projectId: "echo-dddfa",
+            storageBucket: "echo-dddfa.firebasestorage.app",
+            messagingSenderId: "242602465117",
+            appId: "1:242602465117:web:47ec5aeb6834a036dcbab4",
+            measurementId: "G-YQXF8PX7Z1"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let currentUser = null;
+        let userData = null;
+        let userLocation = null;
+        let selectedWithdrawPackage = null;
+        let selectedMerchantPackage = null;
+        let echoCooldown = 0;
+        let cooldownInterval = null;
+        let mockStores = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const isLocal = window.location.hostname === 'localhost' || 
+                           window.location.hostname === '127.0.0.1';
+            
+            if (isLocal) {
+                setTimeout(() => {
+                    initLocalMode();
+                }, 2000);
+            } else {
+                setTimeout(() => {
+                    initApp();
+                }, 2000);
+            }
+        });
+
+        function initLocalMode() {
+            userData = {
+                uid: 'local-user-' + Date.now(),
+                name: 'مستخدم تجريبي',
+                email: '',
+                points: 1250,
+                dailyPoints: 150,
+                weeklyPoints: 850,
+                totalWithdrawn: 0,
+                baridiMob: '0770123456',
+                city: 'الجزائر',
+                level: 'مستكشف',
+                dailyEchoes: 3,
+                isMerchant: false,
+                createdAt: new Date().toISOString()
+            };
+
+            mockStores = [
+                { name: 'مقهى النخبة', type: 'cafe', points: 15, distance: 50 },
+                { name: 'مطعم الكبدة', type: 'restaurant', points: 20, distance: 120 },
+                { name: 'متجر الإلكترونيات', type: 'electronics', points: 25, distance: 200 },
+                { name: 'محل الملابس', type: 'clothing', points: 12, distance: 80 }
+            ];
+
+            document.getElementById('loadingScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            updateUI();
+            simulateNearbyStores();
+            startEchoCooldown();
+            showConfirmModal('مرحباً!', 'أنت الآن في وضع التجربة. استمتع بالتجربة!');
+        }
+
+        async function initApp() {
+            try {
+                const user = await new Promise((resolve) => {
+                    const unsubscribe = auth.onAuthStateChanged((user) => {
+                        unsubscribe();
+                        resolve(user);
+                    });
+                });
+
+                if (user) {
+                    currentUser = user;
+                    await loadUserData();
+                    updateUI();
+                } else {
+                    const result = await auth.signInAnonymously();
+                    currentUser = result.user;
+                    await createUserData();
+                    updateUI();
+                }
+
+                document.getElementById('loadingScreen').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                
+            } catch (error) {
+                showConfirmModal('⚠️ تحذير', 'حدث خطأ في الاتصال. جاري تحميل الوضع المحلي...');
+                setTimeout(() => {
+                    initLocalMode();
+                }, 1000);
+            }
+        }
+
+        async function createUserData() {
+            userData = {
+                uid: currentUser.uid,
+                name: 'مستخدم جديد',
+                email: currentUser.email || '',
+                points: 0,
+                dailyPoints: 0,
+                weeklyPoints: 0,
+                totalWithdrawn: 0,
+                baridiMob: '',
+                city: '',
+                level: 'مبتدئ',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                lastEcho: null,
+                dailyEchoes: 0,
+                withdrawPackage: 'weekly',
+                isMerchant: false,
+                merchantData: null
+            };
+
+            try {
+                await db.collection('users').doc(currentUser.uid).set(userData);
+            } catch (error) {
+                console.error('❌ خطأ في حفظ بيانات المستخدم:', error);
+            }
+        }
+
+        async function loadUserData() {
+            try {
+                const doc = await db.collection('users').doc(currentUser.uid).get();
+                
+                if (doc.exists) {
+                    userData = doc.data();
+                } else {
+                    await createUserData();
+                }
+            } catch (error) {
+                console.error('❌ خطأ في تحميل بيانات المستخدم:', error);
+            }
+        }
+
+        function updateUI() {
+            if (!userData) return;
+
+            document.getElementById('pointsCounter').textContent = userData.points;
+            document.getElementById('dailyPoints').textContent = userData.dailyPoints || 0;
+            document.getElementById('weeklyPoints').textContent = userData.weeklyPoints || 0;
+            document.getElementById('withdrawPoints').textContent = userData.points;
+            document.getElementById('withdrawAmount').textContent = Math.floor(userData.points) + ' دج';
+            document.getElementById('totalWithdrawn').textContent = userData.totalWithdrawn || 0;
+            document.getElementById('userBaridiMob').textContent = userData.baridiMob || 'غير محدد';
+            document.getElementById('userName').textContent = userData.name;
+            document.getElementById('userLevel').textContent = 'مستوى ' + userData.level;
+            document.getElementById('userInitial').textContent = userData.name.charAt(0);
+            document.getElementById('profileName').textContent = userData.name;
+            document.getElementById('profileEmail').textContent = userData.email || 'لم يتم تحديد البريد';
+            document.getElementById('profileInitial').textContent = userData.name.charAt(0);
+            document.getElementById('profileBaridiMob').value = userData.baridiMob || '';
+            document.getElementById('profileCity').value = userData.city || '';
+            
+            const dailyEchoes = userData.dailyEchoes || 0;
+            const dailyProgress = Math.min(dailyEchoes * 20, 100);
+            document.getElementById('dailyProgress').textContent = dailyEchoes + '/5';
+            document.getElementById('progressFill').style.width = dailyProgress + '%';
+            
+            updateRecentActivities();
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            document.getElementById(tabName + 'Tab').classList.remove('hidden');
+            
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            const activeTab = Array.from(document.querySelectorAll('.tab')).find(tab => 
+                tab.textContent.includes(tabName === 'interaction' ? 'التفاعل' : 
+                tabName === 'withdraw' ? 'السحب' : 
+                tabName === 'merchant' ? 'المتجر' : 'الحساب')
+            );
+            
+            if (activeTab) {
+                activeTab.classList.add('active');
+            }
+        }
+
+        function getUserLocation() {
+            if (!navigator.geolocation) {
+                showConfirmModal('⚠️ تحذير', 'المتصفح لا يدعم خدمة تحديد الموقع');
+                return;
+            }
+
+            showConfirmModal('📍 جاري العمل', 'جاري تحديد موقعك...');
+
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+
+                    try {
+                        if (currentUser && db) {
+                            await db.collection('users').doc(currentUser.uid).update({
+                                location: userLocation,
+                                lastLocationUpdate: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                        }
+
+                        document.getElementById('mapContainer').innerHTML = `
+                            <div class="text-center p-8">
+                                <i class="fas fa-map-marker-alt text-5xl text-[#00C9FF] mb-4"></i>
+                                <p class="font-bold mb-2">تم تحديد موقعك بنجاح</p>
+                                <p class="text-sm opacity-70 mb-4">تم العثور على محلات قريبة</p>
+                                <button onclick="simulateNearbyStores()" class="btn btn-primary">
+                                    <i class="fas fa-store"></i> عرض المحلات القريبة
+                                </button>
+                            </div>
+                        `;
+
+                        showConfirmModal('✅ نجاح', 'تم تحديد موقعك بنجاح!');
+                        
+                    } catch (error) {
+                        document.getElementById('mapContainer').innerHTML = `
+                            <div class="text-center p-8">
+                                <i class="fas fa-map-marker-alt text-5xl text-[#00C9FF] mb-4"></i>
+                                <p class="font-bold mb-2">تم تحديد موقعك</p>
+                                <button onclick="simulateNearbyStores()" class="btn btn-primary mt-4">
+                                    <i class="fas fa-store"></i> عرض المحلات القريبة
+                                </button>
+                            </div>
+                        `;
+                    }
+                },
+                (error) => {
+                    let errorMessage = 'فشل في تحديد الموقع';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage = 'تم رفض الإذن. يرجى السماح بالوصول إلى الموقع';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage = 'معلومات الموقع غير متاحة';
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage = 'انتهت مهلة طلب الموقع';
+                            break;
+                    }
+                    showConfirmModal('❌ خطأ', errorMessage);
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+        async function simulateNearbyStores() {
+            if (!userLocation) {
+                showConfirmModal('⚠️ تحذير', 'يرجى تحديد موقعك أولاً');
+                return;
+            }
+
+            if (mockStores.length === 0) {
+                mockStores = [
+                    { name: 'مقهى النخبة', type: 'cafe', points: 15, distance: 50 },
+                    { name: 'مطعم الكبدة', type: 'restaurant', points: 20, distance: 120 },
+                    { name: 'متجر الإلكترونيات', type: 'electronics', points: 25, distance: 200 },
+                    { name: 'محل الملابس', type: 'clothing', points: 12, distance: 80 }
+                ];
+            }
+
+            document.getElementById('nearbyStores').textContent = mockStores.length;
+            
+            document.getElementById('mapContainer').innerHTML = `
+                <div class="p-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="font-bold text-[#00C9FF]">المحلات القريبة منك:</h4>
+                        <span class="badge badge-primary">${mockStores.length} محل</span>
+                    </div>
+                    <div class="space-y-3 max-h-80 overflow-y-auto">
+                        ${mockStores.map((store, index) => `
+                            <div class="flex items-center justify-between p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full ${getStoreColor(store.type)} flex items-center justify-center">
+                                        <i class="fas ${getStoreIcon(store.type)} text-white"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-bold">${store.name}</div>
+                                        <div class="text-xs opacity-70">${store.distance} متر</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[#FFD700] font-bold text-lg">
+                                        ⭐ ${store.points}
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="mt-4 text-center">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <span>اضغط زر الصدى عندما تكون على بعد 50 متر من أي محل</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getStoreColor(type) {
+            switch(type) {
+                case 'cafe': return 'bg-gradient-to-r from-amber-600 to-amber-800';
+                case 'restaurant': return 'bg-gradient-to-r from-red-600 to-red-800';
+                case 'market': return 'bg-gradient-to-r from-green-600 to-green-800';
+                case 'clothing': return 'bg-gradient-to-r from-purple-600 to-purple-800';
+                case 'electronics': return 'bg-gradient-to-r from-blue-600 to-blue-800';
+                default: return 'bg-gradient-to-r from-gray-600 to-gray-800';
+            }
+        }
+
+        function getStoreIcon(type) {
+            switch(type) {
+                case 'cafe': return 'fa-coffee';
+                case 'restaurant': return 'fa-utensils';
+                case 'market': return 'fa-shopping-cart';
+                case 'clothing': return 'fa-tshirt';
+                case 'electronics': return 'fa-laptop';
+                default: return 'fa-store';
+            }
+        }
+
+        document.getElementById('echoButton').onclick = async function() {
+            if (echoCooldown > 0) {
+                showConfirmModal('⏳ انتظر', `يرجى الانتظار ${echoCooldown} ثانية`);
+                return;
+            }
+
+            if (!userLocation) {
+                showConfirmModal('📍 تحذير', 'يرجى تحديد موقعك أولاً');
+                return;
+            }
+
+            if (mockStores.length === 0) {
+                showConfirmModal('🏬 تحذير', 'لا توجد محلات قريبة. تحرك قليلاً');
+                return;
+            }
+
+            const pointsEarned = Math.floor(Math.random() * 11) + 10;
+            const storeIndex = Math.floor(Math.random() * mockStores.length);
+            const store = mockStores[storeIndex];
+            
+            try {
+                userData.points += pointsEarned;
+                userData.dailyPoints = (userData.dailyPoints || 0) + pointsEarned;
+                userData.weeklyPoints = (userData.weeklyPoints || 0) + pointsEarned;
+                userData.dailyEchoes = (userData.dailyEchoes || 0) + 1;
+                userData.lastEcho = new Date().toISOString();
+
+                if (currentUser && db) {
+                    await db.collection('users').doc(currentUser.uid).update({
+                        points: firebase.firestore.FieldValue.increment(pointsEarned),
+                        dailyPoints: firebase.firestore.FieldValue.increment(pointsEarned),
+                        weeklyPoints: firebase.firestore.FieldValue.increment(pointsEarned),
+                        dailyEchoes: firebase.firestore.FieldValue.increment(1),
+                        lastEcho: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    await db.collection('interactions').add({
+                        userId: currentUser.uid,
+                        points: pointsEarned,
+                        location: userLocation,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                        storeName: store.name,
+                        storeType: store.type
+                    });
+                }
+
+                updateUI();
+                echoCooldown = 30;
+                startEchoCooldown();
+
+                const button = document.getElementById('echoButton');
+                button.style.transform = 'scale(1.1)';
+                setTimeout(() => button.style.transform = 'scale(1)', 300);
+
+                showConfirmModal('🎉 مبروك!', `لقد ربحت ${pointsEarned} نقطة من ${store.name}!`);
+
+                addRecentActivity({
+                    type: 'interaction',
+                    title: 'تفاعل ناجح',
+                    description: `${pointsEarned} نقطة من ${store.name}`,
+                    points: pointsEarned,
+                    timestamp: new Date().toISOString()
+                });
+                
+            } catch (error) {
+                console.error('❌ خطأ في التفاعل:', error);
+                showConfirmModal('❌ خطأ', 'حدث خطأ في التفاعل. يرجى المحاولة مرة أخرى');
+            }
+        };
+
+        function startEchoCooldown() {
+            if (cooldownInterval) clearInterval(cooldownInterval);
+            
+            cooldownInterval = setInterval(() => {
+                if (echoCooldown > 0) {
+                    echoCooldown--;
+                    document.getElementById('cooldownTimer').textContent = echoCooldown;
+                    
+                    const timerElement = document.querySelector('.alert-warning span');
+                    if (timerElement) {
+                        if (echoCooldown < 10) {
+                            timerElement.style.color = '#EF4444';
+                        } else if (echoCooldown < 20) {
+                            timerElement.style.color = '#F59E0B';
+                        } else {
+                            timerElement.style.color = '#00C9FF';
+                        }
+                    }
+                } else {
+                    clearInterval(cooldownInterval);
+                    document.getElementById('cooldownTimer').textContent = '0';
+                }
+            }, 1000);
+        }
+
+        function selectWithdrawPackage(type, limit) {
+            selectedWithdrawPackage = { type, limit };
+            showWithdrawForm();
+        }
+
+        function showWithdrawForm() {
+            if (userData.points < 500) {
+                showConfirmModal('💰 تحذير', 'الحد الأدنى للسحب هو 500 نقطة');
+                return;
+            }
+
+            document.getElementById('modalPoints').textContent = userData.points;
+            document.getElementById('modalAmount').textContent = Math.floor(userData.points) + ' دج';
+            document.getElementById('modalFee').textContent = '0 دج';
+            document.getElementById('baridiMobInput').value = userData.baridiMob || '';
+            document.getElementById('withdrawInput').value = Math.min(1000, Math.floor(userData.points));
+            
+            document.getElementById('withdrawModal').classList.remove('hidden');
+        }
+
+        function closeWithdrawModal() {
+            document.getElementById('withdrawModal').classList.add('hidden');
+        }
+
+        async function submitWithdrawal() {
+            const amount = parseInt(document.getElementById('withdrawInput').value);
+            const baridiMob = document.getElementById('baridiMobInput').value.trim();
+
+            if (!amount || amount < 500) {
+                showConfirmModal('❌ خطأ', 'الحد الأدنى للسحب هو 500 دج');
+                return;
+            }
+
+            if (!baridiMob || !/^07[0-9]{8}$/.test(baridiMob)) {
+                showConfirmModal('❌ خطأ', 'يرجى إدخال رقم بريدي موب صحيح (07XXXXXXXX)');
+                return;
+            }
+
+            const pointsNeeded = amount;
+
+            if (userData.points < pointsNeeded) {
+                showConfirmModal('❌ خطأ', 'نقاط غير كافية للسحب');
+                return;
+            }
+
+            try {
+                userData.points -= pointsNeeded;
+                userData.totalWithdrawn = (userData.totalWithdrawn || 0) + amount;
+                userData.baridiMob = baridiMob;
+                
+                if (currentUser && db) {
+                    await db.collection('users').doc(currentUser.uid).update({
+                        points: firebase.firestore.FieldValue.increment(-pointsNeeded),
+                        totalWithdrawn: firebase.firestore.FieldValue.increment(amount),
+                        baridiMob: baridiMob
+                    });
+
+                    await db.collection('withdrawals').add({
+                        userId: currentUser.uid,
+                        amount: amount,
+                        points: pointsNeeded,
+                        baridiMob: baridiMob,
+                        status: 'pending',
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                        packageType: selectedWithdrawPackage?.type || 'weekly'
+                    });
+                }
+
+                closeWithdrawModal();
+                updateUI();
+                showConfirmModal('✅ نجاح', `تم تقديم طلب سحب بقيمة ${amount} دج. سنتواصل معك خلال 24 ساعة على الرقم: ${baridiMob}`);
+
+                addRecentActivity({
+                    type: 'withdrawal',
+                    title: 'طلب سحب',
+                    description: `${amount} دج إلى ${baridiMob}`,
+                    points: -pointsNeeded,
+                    timestamp: new Date().toISOString()
+                });
+                
+            } catch (error) {
+                console.error('❌ خطأ في السحب:', error);
+                showConfirmModal('❌ خطأ', 'حدث خطأ في عملية السحب. يرجى المحاولة مرة أخرى');
+            }
+        }
+
+        function selectMerchantPackage(type, price) {
+            selectedMerchantPackage = { type, price };
+            
+            document.getElementById('selectedPackage').textContent = 
+                type === 'weekly' ? 'أسبوعي' : 
+                type === 'monthly' ? 'شهري' : '3 أشهر';
+            document.getElementById('packageAmount').textContent = price + ' دج';
+            document.getElementById('packageDuration').textContent = 
+                type === 'weekly' ? 'أسبوع واحد' : 
+                type === 'monthly' ? 'شهر واحد' : '3 أشهر';
+            
+            document.getElementById('merchantModal').classList.remove('hidden');
+        }
+
+        function closeMerchantModal() {
+            document.getElementById('merchantModal').classList.add('hidden');
+        }
+
+        async function submitMerchantSubscription() {
+            const storeName = document.getElementById('storeName').value.trim();
+            const storeType = document.getElementById('storeType').value;
+            const baridiMob = document.getElementById('merchantBaridiMob').value.trim();
+
+            if (!storeName) {
+                showConfirmModal('❌ خطأ', 'يرجى إدخال اسم المتجر');
+                return;
+            }
+
+            if (!storeType) {
+                showConfirmModal('❌ خطأ', 'يرجى اختيار نوع المتجر');
+                return;
+            }
+
+            if (!baridiMob || !/^07[0-9]{8}$/.test(baridiMob)) {
+                showConfirmModal('❌ خطأ', 'يرجى إدخال رقم بريدي موب صحيح (07XXXXXXXX)');
+                return;
+            }
+
+            try {
+                userData.isMerchant = true;
+                userData.merchantData = {
+                    storeName: storeName,
+                    storeType: storeType,
+                    packageType: selectedMerchantPackage.type,
+                    packagePrice: selectedMerchantPackage.price,
+                    subscriptionDate: new Date().toISOString(),
+                    status: 'pending'
+                };
+                userData.baridiMob = baridiMob;
+
+                if (currentUser && db) {
+                    await db.collection('users').doc(currentUser.uid).update({
+                        isMerchant: true,
+                        merchantData: userData.merchantData,
+                        baridiMob: baridiMob
+                    });
+
+                    await db.collection('merchantSubscriptions').add({
+                        userId: currentUser.uid,
+                        storeName: storeName,
+                        storeType: storeType,
+                        packageType: selectedMerchantPackage.type,
+                        packagePrice: selectedMerchantPackage.price,
+                        baridiMob: baridiMob,
+                        status: 'pending',
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+
+                closeMerchantModal();
+                updateUI();
+                showConfirmModal('✅ نجاح', `تم تقديم طلب اشتراك المتجر "${storeName}". سنتواصل معك خلال 24 ساعة على الرقم: ${baridiMob}`);
+
+                addRecentActivity({
+                    type: 'merchant',
+                    title: 'اشتراك متجر',
+                    description: `${storeName} - ${selectedMerchantPackage.price} دج`,
+                    points: 0,
+                    timestamp: new Date().toISOString()
+                });
+                
+            } catch (error) {
+                console.error('❌ خطأ في اشتراك المتجر:', error);
+                showConfirmModal('❌ خطأ', 'حدث خطأ في اشتراك المتجر. يرجى المحاولة مرة أخرى');
+            }
+        }
+
+        async function updateProfile() {
+            const baridiMob = document.getElementById('profileBaridiMob').value.trim();
+            const city = document.getElementById('profileCity').value.trim();
+
+            if (baridiMob && !/^07[0-9]{8}$/.test(baridiMob)) {
+                showConfirmModal('❌ خطأ', 'يرجى إدخال رقم بريدي موب صحيح (07XXXXXXXX)');
+                return;
+            }
+
+            try {
+                userData.baridiMob = baridiMob;
+                userData.city = city;
+
+                if (currentUser && db) {
+                    await db.collection('users').doc(currentUser.uid).update({
+                        baridiMob: baridiMob,
+                        city: city
+                    });
+                }
+
+                updateUI();
+                showConfirmModal('✅ نجاح', 'تم تحديث الملف الشخصي بنجاح');
+
+                addRecentActivity({
+                    type: 'profile',
+                    title: 'تحديث الملف',
+                    description: `تم تحديث معلومات الحساب`,
+                    points: 0,
+                    timestamp: new Date().toISOString()
+                });
+                
+            } catch (error) {
+                console.error('❌ خطأ في تحديث الملف:', error);
+                showConfirmModal('❌ خطأ', 'حدث خطأ في تحديث الملف الشخصي');
+            }
+        }
+
+        function updateRecentActivities() {
+            const activitiesContainer = document.getElementById('recentActivities');
+            
+            const activities = userData.recentActivities || [
+                {
+                    type: 'welcome',
+                    title: 'مرحباً بك في Echo',
+                    description: 'ابدأ رحلتك في اكتشاف المحلات القريبة',
+                    timestamp: new Date().toISOString()
+                }
+            ];
+
+            activitiesContainer.innerHTML = activities.map(activity => `
+                <div class="flex items-center gap-3 p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                    <div class="w-10 h-10 rounded-full ${getActivityColor(activity.type)} flex items-center justify-center">
+                        <i class="fas ${getActivityIcon(activity.type)} text-white"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="font-bold">${activity.title}</div>
+                        <div class="text-sm opacity-70">${activity.description}</div>
+                        <div class="text-xs opacity-50 mt-1">${formatDate(activity.timestamp)}</div>
+                    </div>
+                    ${activity.points ? `
+                        <div class="text-right">
+                            <div class="${activity.points > 0 ? 'text-[#92FE9D]' : 'text-[#EF4444]'} font-bold">
+                                ${activity.points > 0 ? '+' : ''}${activity.points}
+                            </div>
+                            <div class="text-xs opacity-70">نقطة</div>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function addRecentActivity(activity) {
+            if (!userData.recentActivities) {
+                userData.recentActivities = [];
+            }
+            
+            userData.recentActivities.unshift(activity);
+            
+            if (userData.recentActivities.length > 10) {
+                userData.recentActivities = userData.recentActivities.slice(0, 10);
+            }
+            
+            updateRecentActivities();
+        }
+
+        function getActivityColor(type) {
+            switch(type) {
+                case 'interaction': return 'bg-gradient-to-r from-[#00C9FF] to-[#92FE9D]';
+                case 'withdrawal': return 'bg-gradient-to-r from-[#FFD700] to-[#FFAA00]';
+                case 'merchant': return 'bg-gradient-to-r from-[#9d4edd] to-[#ff6b6b]';
+                case 'profile': return 'bg-gradient-to-r from-[#10B981] to-[#3B82F6]';
+                default: return 'bg-gradient-to-r from-gray-600 to-gray-800';
+            }
+        }
+
+        function getActivityIcon(type) {
+            switch(type) {
+                case 'interaction': return 'fa-bullseye';
+                case 'withdrawal': return 'fa-money-bill-wave';
+                case 'merchant': return 'fa-store';
+                case 'profile': return 'fa-user-cog';
+                case 'welcome': return 'fa-gem';
+                default: return 'fa-bell';
+            }
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 60000) return 'الآن';
+            if (diff < 3600000) return `قبل ${Math.floor(diff / 60000)} دقيقة`;
+            
+            if (date.toDateString() === now.toDateString()) {
+                return `اليوم ${date.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}`;
+            }
+            
+            const yesterday = new Date(now);
+            yesterday.setDate(yesterday.getDate() - 1);
+            if (date.toDateString() === yesterday.toDateString()) {
+                return `أمس ${date.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}`;
+            }
+            
+            return date.toLocaleDateString('ar-EG', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function showConfirmModal(title, message) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            document.getElementById('confirmModal').classList.remove('hidden');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
